@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <form onsubmit="onSend(event)">
+    <input type="text" id="input" autocomplete="off">
+    <button type="submit">Send</button>
+  </form>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+  <script>
+    const socketIO = io.connect("ws://localhost:8173/sip");
+    const room = document.location.hash;
+
+    socketIO.on('connect', (msg) => {
+      socketIO.emit('connected', room);
+    });
+
+    socketIO.on('message', console.log);
+
+    function onSend(event) {
+      event.preventDefault();
+      const textNode = document.getElementById("input");
+      const message = textNode.value;
+      textNode.value = "";
+      socketIO.emit("message", {
+        room,
+        message
+      })
+    }
+
+  </script>
+</body>
+
+</html>
